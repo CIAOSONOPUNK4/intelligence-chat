@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>IntelligenceChat - Registrazione</title>
+    <style>
+        body { background-color: #202123; color: white; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #343541; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #4f505e; }
+        h2 { margin-bottom: 8px; font-size: 24px; color: #ececf1; }
+        p { color: #9a9b9f; font-size: 14px; margin-bottom: 25px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #c5c5d2; margin-bottom: 5px; font-weight: bold; }
+        input { width: 93%; padding: 12px; border-radius: 6px; border: 1px solid #4f505e; background-color: #40414f; color: white; font-size: 15px; transition: border 0.2s; }
+        input:focus { border-color: #10a37f; outline: none; }
+        button { width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; background-color: #10a37f; color: white; transition: background 0.2s; }
+        button:hover { background-color: #0d8a6a; }
+        .feedback { margin-top: 15px; font-size: 14px; display: none; padding: 10px; border-radius: 6px; text-align: left; }
+        .error { background-color: #f22c3d33; color: #ff4a5a; border: 1px solid #f22c3d; display: block; }
+        .success { background-color: #10a37f33; color: #26e6b4; border: 1px solid #10a37f; display: block; }
+        .link-auth { margin-top: 25px; font-size: 14px; color: #9a9b9f; }
+        .link-auth a { color: #10a37f; text-decoration: none; font-weight: bold; }
+        .link-auth a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Crea Account</h2>
+        <p>Unisciti a IntelligenceChat AI</p>
+        
+        <div class="input-group">
+            <label for="username">USERNAME</label>
+            <input type="text" id="username" placeholder="Scegli un username..." autocomplete="off">
+        </div>
+        
+        <div class="input-group">
+            <label for="password">PASSWORD</label>
+            <input type="password" id="password" placeholder="Crea una password sicura...">
+        </div>
+        
+        <button id="btn-submit" onclick="eseguiRegistrazione()">Registrati</button>
+        
+        <div id="msg-feedback" class="feedback"></div>
+        
+        <div class="link-auth">Hai già un account? <a href="/login">Accedi qui</a></div>
+    </div>
+
+    <script>
+        function eseguiRegistrazione() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const feedback = document.getElementById('msg-feedback');
+            const btn = document.getElementById('btn-submit');
+            
+            feedback.style.display = 'none';
+            feedback.className = 'feedback';
+            
+            if(!u || !p) {
+                feedback.innerText = "⚠️ Compila sia l'username che la password.";
+                feedback.classList.add('error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerText = "Registrazione in corso...";
+            
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: u, password: p})
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerText = "Registrati";
+                
+                feedback.innerText = data.message;
+                if(data.success) {
+                    feedback.classList.add('success');
+                    // Dopo 1.5 secondi di successo reindirizza l'utente automaticamente al login
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else {
+                    feedback.classList.add('error');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerText = "Registrati";
+                feedback.innerText = "❌ Errore di connessione al server.";
+                feedback.classList.add('error');
+            });
+        }
+    </script>
+</body>
+</html>

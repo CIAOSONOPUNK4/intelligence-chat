@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>IntelligenceChat - Login</title>
+    <style>
+        body { background-color: #202123; color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #343541; padding: 40px; border-radius: 10px; width: 320px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        input { width: 92%; padding: 12px; margin: 12px 0; border-radius: 6px; border: 1px solid #4f505e; background-color: #40414f; color: white; font-size: 14px; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; background-color: #10a37f; color: white; }
+        button:hover { background-color: #0d8a6a; }
+        .link-auth { margin-top: 20px; font-size: 13px; color: #9a9b9f; }
+        .link-auth a { color: #10a37f; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Accedi a IntelligenceChat</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="eseguiLogin()">Accedi</button>
+        <div class="link-auth">Non hai un account? <a href="/signin">Registrati qui</a></div>
+    </div>
+    <script>
+        function eseguiLogin() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(!u || !p) return alert("Compila tutti i campi.");
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: u, password: p})
+            }).then(res => res.json()).then(data => {
+                if(data.success) window.location.href = '/';
+                else alert(data.message);
+            });
+        }
+    </script>
+</body>
+</html>
